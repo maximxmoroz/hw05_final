@@ -1,5 +1,3 @@
-import os
-
 import shutil
 import tempfile
 
@@ -136,8 +134,8 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(
             (reverse('posts:post_detail', kwargs={'post_id': self.post.id})))
         test_post = self.post
-        text_obj = response.context['post'] 
-        self.assertEqual(test_post, text_obj) 
+        text_obj = response.context['post']
+        self.assertEqual(test_post, text_obj)
 
     def test_post_post_create_page_show_correct_context(self):
         """Проверяем Context страницы post_create"""

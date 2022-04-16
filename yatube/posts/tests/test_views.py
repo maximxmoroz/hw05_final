@@ -134,16 +134,10 @@ class PostPagesTests(TestCase):
     def test_post_post_detail_page_show_correct_context(self):
         """Проверяем Context страницы post_detail"""
         response = self.authorized_client.get(
-            reverse('posts:post_detail', args=[self.post[0].pk]))
-        first_object = response.context['post']
-        post_text = first_object.text
-        post_author = first_object.author.username
-        post_group = first_object.group
-        post_image = first_object.image
-        self.assertEqual(post_text, self.post_list[0].text)
-        self.assertEqual(post_author, 'Vasya')
-        self.assertEqual(post_group, self.group)
-        self.assertEqual(os.path.basename(post_image.name), self.image.name)
+            (reverse('posts:post_detail', kwargs={'post_id': self.post.id})))
+        test_post = self.post
+        text_obj = response.context['post'] 
+        self.assertEqual(test_post, text_obj) 
 
     def test_post_post_create_page_show_correct_context(self):
         """Проверяем Context страницы post_create"""

@@ -134,7 +134,7 @@ class PostPagesTests(TestCase):
     def test_post_post_detail_page_show_correct_context(self):
         """Проверяем Context страницы post_detail"""
         response = self.authorized_client.get(
-            reverse('posts:post_detail', args=[self.post_list[0].pk]))
+            reverse('posts:post_detail', args=[self.post[0].pk]))
         first_object = response.context['post']
         post_text = first_object.text
         post_author = first_object.author.username

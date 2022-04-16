@@ -12,7 +12,8 @@ class PostForm(forms.ModelForm):
                   "image": "Вставьте свою картинку"}
         help_texts = {"text": "Удивите всех своей историей",
                       "group": "Это всё ...",
-                      "image": "Картинка должна быть здесь"} 
+                      "image": "Картинка должна быть здесь"}
+
 
 class CommentForm(forms.ModelForm):
     class Meta:

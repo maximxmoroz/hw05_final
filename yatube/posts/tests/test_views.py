@@ -21,7 +21,7 @@ User = get_user_model()
 class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super().setUpClass() 
+        super().setUpClass()
         cls.authorized_client = Client()
         cls.new_user = User.objects.create_user(username='Testname')
         cls.new_authorized_client = Client()
@@ -78,7 +78,7 @@ class PostPagesTests(TestCase):
             'posts/post_detail.html',
             reverse('posts:post_create'): 'posts/create_post.html',
             reverse('posts:post_edit', kwargs={'post_id': self.post.pk}):
-            'posts/create_post.html', 
+            'posts/create_post.html',
         }
         for reverse_name, template in templates_pages_names.items():
             with self.subTest(reverse_name=reverse_name):
@@ -194,7 +194,7 @@ class PostPagesTests(TestCase):
             'posts:profile_follow',
             kwargs={'username': self.user.username}
         ))
-        self.assertEqual(response.status_code, 302) 
+        self.assertEqual(response.status_code, 302)
 
     def test_unfollow(self):
         """Подписчик может отписаться"""
@@ -238,6 +238,7 @@ class PaginatorViewsTest(TestCase):
             reverse('posts:index') + '?page=2'
         )
         self.assertEqual(len(response.context['page_obj']), 3)
+
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostImageExistTest(TestCase):
@@ -298,7 +299,7 @@ class PostImageExistTest(TestCase):
         self.assertEqual(post_image, 'posts/small.gif')
 
     def test_group_and_profile_image_exist(self):
-        templates_pages_name = { 
+        templates_pages_name = {
             'posts:group_posts': self.group.slug,
             'posts:profile': self.user.username,
         }
@@ -308,6 +309,7 @@ class PostImageExistTest(TestCase):
                 test_object = response.context['page_obj'][0]
                 post_image = test_object.image
                 self.assertEqual(post_image, 'posts/small.gif')
+
 
 class CommentTest(TestCase):
     @classmethod

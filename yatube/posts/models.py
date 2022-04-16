@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.db.models import constraints
 
 from django.db import models
 
@@ -48,6 +47,7 @@ class Post(models.Model):
     class Meta:
         ordering = ('-pub_date',)
 
+
 class Comment(models.Model):
     post = models.ForeignKey(
         Post,
@@ -78,6 +78,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text[:15]
+
 
 class Follow(models.Model):
     user = models.ForeignKey(

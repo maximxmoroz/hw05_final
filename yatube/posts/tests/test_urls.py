@@ -39,7 +39,7 @@ class PostURLTests(TestCase):
             f'/profile/{cls.user.username}/': 'posts/profile.html',
             f'/posts/{cls.post.id}/': 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
-            f'/posts/{cls.post.id}/edit/': 'posts/create_post.html', 
+            f'/posts/{cls.post.id}/edit/': 'posts/create_post.html',
         }
 
     def test_urls_uses_correct_template(self):

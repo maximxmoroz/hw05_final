@@ -17,6 +17,7 @@ def pagination(request, posts):
     page_obj = paginator.get_page(page_number)
     return(page_obj)
 
+
 @cache_page(20)
 def index(request):
     post_list = Post.objects.select_related().all()
@@ -30,11 +31,13 @@ def index(request):
     }
     return render(request, 'posts/index.html', context)
 
+
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     context = page_context(request, group.posts.all())
     context.update(group=group)
     return render(request, 'posts/group_list.html', context)
+
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
@@ -55,7 +58,7 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    form = CommentForm(request.POST or None)
+    #form = CommentForm(request.POST or None)
     comments = post.comments.select_related('author')
     post_count = post.author.posts.count()
     following = (request.user.is_authenticated
@@ -103,6 +106,7 @@ def post_edit(request, post_id):
     }
     return render(request, 'posts/create_post.html', context)
 
+
 @login_required
 def add_comment(request, post_id):
     # Получите пост
@@ -114,6 +118,7 @@ def add_comment(request, post_id):
         comment.post = post
         comment.save()
     return redirect('posts:post_detail', post_id=post_id)
+
 
 @login_required
 def follow_index(request):

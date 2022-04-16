@@ -242,7 +242,7 @@ class FollowTest(TestCase):
             ).exists()
         )
 
- 
+
 class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):

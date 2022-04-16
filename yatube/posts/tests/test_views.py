@@ -211,6 +211,7 @@ class PostPagesTests(TestCase):
             user=self.new_user, author=self.user
         ).exists())
 
+
 class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):

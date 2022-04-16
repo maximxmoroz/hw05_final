@@ -229,6 +229,7 @@ class PaginatorViewsTest(TestCase):
             for i in range(13)]
 
     def test_index_page_contains_ten_records(self):
+        cache.clear()
         response = self.client.get(reverse('posts:index'))
         self.assertEqual(len(response.context['page_obj']), 10)
 

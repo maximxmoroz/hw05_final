@@ -1,3 +1,5 @@
+import os
+
 import shutil
 import tempfile
 
@@ -142,6 +144,7 @@ class PostPagesTests(TestCase):
         self.assertEqual(post_author, 'Vasya')
         self.assertEqual(post_group, self.group)
         self.assertEqual(os.path.basename(post_image.name), self.image.name)
+
     def test_post_post_create_page_show_correct_context(self):
         """Проверяем Context страницы post_create"""
         response = self.authorized_client.get(

@@ -58,12 +58,14 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
+    form = CommentForm()
     comments = post.comments.select_related('author')
     post_count = post.author.posts.count()
     following = (request.user.is_authenticated
                  and post.author.following.filter(user=request.user).exists())
     context = {
         'post': post,
+        'form': form,
         'post_count': post_count,
         'comments': comments,
         'following': following,

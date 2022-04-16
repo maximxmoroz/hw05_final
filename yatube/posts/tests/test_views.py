@@ -22,6 +22,8 @@ class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.user_not_author = get_user_model().objects.create_user(
+            username='Ivanoff')
         cls.authorized_client = Client()
         cls.new_user = User.objects.create_user(username='Testname')
         cls.new_authorized_client = Client()
@@ -60,6 +62,7 @@ class PostPagesTests(TestCase):
         )
 
     def setUp(self):
+        self.authorized_author = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
@@ -188,60 +191,6 @@ class PostPagesTests(TestCase):
                 kwargs={'slug': self.other_group.slug})
         )
         self.assertNotIn(new_post, response.context['page_obj'])
-
-
-class FollowTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.follower = User.objects.create_user(username='follower')
-        cls.follower_client = Client()
-        cls.follower_client.force_login(cls.follower)
-        cls.author = User.objects.create_user(username='author')
-        cls.author_client = Client()
-        cls.author_client.force_login(cls.author)
-        cls.post = Post.objects.create(
-            author=cls.author,
-            text='Тестовый текст',
-        )
-
-    def setUp(self):
-        self.follow = Follow.objects.get_or_create(
-            user=self.follower,
-            author=self.author
-        )
-
-    def test_user_can_unfollow(self):
-        count_before_unfollow = Follow.objects.count()
-        self.follower_client.get(reverse(
-            'posts:profile_unfollow',
-            kwargs={'username': self.author.username}))
-        count_after_unfollow = Follow.objects.count()
-        self.assertNotEqual(count_before_unfollow, count_after_unfollow)
-        self.assertFalse(
-            Follow.objects.filter(
-                user=self.follower,
-                author=self.author
-            ).exists()
-        )
-
-    def test_user_can_follow(self):
-        self.follower_client.get(reverse(
-            'posts:profile_unfollow',
-            kwargs={'username': self.author.username}))
-        count_before_follow = Follow.objects.count()
-        self.follower_client.get(reverse(
-            'posts:profile_follow',
-            kwargs={'username': self.author.username}))
-        count_after_follow = Follow.objects.count()
-        self.assertNotEqual(count_before_follow, count_after_follow)
-        self.assertTrue(
-            Follow.objects.filter(
-                user=self.follower,
-                author=self.author
-            ).exists()
-        )
-
 
 class PaginatorViewsTest(TestCase):
     @classmethod

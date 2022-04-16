@@ -133,8 +133,8 @@ class PostPagesTests(TestCase):
         """Проверяем Context страницы post_detail"""
         response = self.authorized_client.get(
             reverse('posts:post_detail', kwargs={'post_id': self.post.id}))
-        post_pk = response.context['post']
-        self.assertEqual(post_pk, self.post.pk)
+        post_pk = response.context['post'].pk
+        self.assertEqual(post_pk, self.post_pk)
 
     def test_post_post_create_page_show_correct_context(self):
         """Проверяем Context страницы post_create"""

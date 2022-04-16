@@ -202,7 +202,7 @@ class PostPagesTests(TestCase):
                                     kwargs={"username": self.user.username}))
         self.assertEqual(self.user.following.count(), count_followers + 1)
         self.assertTrue(
-            self.user.following.filter(user=self.follow_user2).exists()) 
+        self.user.following.filter(user=self.follow_user2).exists()) 
 
     def test_unfollow(self):
         """Подписчик может отписаться"""

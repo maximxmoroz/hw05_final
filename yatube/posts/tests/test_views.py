@@ -27,6 +27,7 @@ class PostPagesTests(TestCase):
         cls.authorized_client = Client()
         cls.new_user = User.objects.create_user(username='Testname')
         cls.new_authorized_client = Client()
+        cls.new_authorized_client.force_login(cls.new_user)
         image = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
@@ -199,7 +200,7 @@ class PostPagesTests(TestCase):
             kwargs={'username': self.user.username}
         ))
         self.assertEqual(response.status_code, 302)
-        self.assertFalse(Follow.objects.filter(
+        self.assertTrue(Follow.objects.filter(
             user=self.new_user, author=self.user
         ).exists())
 

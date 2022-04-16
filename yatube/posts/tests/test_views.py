@@ -192,6 +192,25 @@ class PostPagesTests(TestCase):
         )
         self.assertNotIn(new_post, response.context['page_obj'])
 
+    def test_follow(self):
+        """Пользователь может подписаться"""
+        response = self.new_authorized_client.get(reverse(
+            'posts:profile_follow',
+            kwargs={'username': self.user.username}
+        ))
+        self.assertEqual(response.status_code, 302)
+
+    def test_unfollow(self):
+        """Подписчик может отписаться"""
+        response = self.new_authorized_client.get(reverse(
+            'posts:profile_unfollow',
+            kwargs={'username': self.user.username}
+        ))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Follow.objects.filter(
+            user=self.new_user, author=self.user
+        ).exists())
+
 class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):

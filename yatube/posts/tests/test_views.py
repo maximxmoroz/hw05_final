@@ -199,6 +199,9 @@ class PostPagesTests(TestCase):
             kwargs={'username': self.user.username}
         ))
         self.assertEqual(response.status_code, 302)
+        self.assertFalse(Follow.objects.filter(
+            user=self.new_user, author=self.user
+        ).exists())
 
     def test_unfollow(self):
         """Подписчик может отписаться"""

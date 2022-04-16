@@ -58,7 +58,6 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    #form = CommentForm(request.POST or None)
     comments = post.comments.select_related('author')
     post_count = post.author.posts.count()
     following = (request.user.is_authenticated
@@ -123,8 +122,7 @@ def add_comment(request, post_id):
 @login_required
 def follow_index(request):
     posts = Post.objects.select_related('group').filter(
-        author__following__user=request.user
-    )
+            author__following__user=request.user)
     context = page_context(request, posts)
     context.update(posts=posts)
     return render(request, 'posts/follow.html', context)

@@ -122,7 +122,7 @@ def add_comment(request, post_id):
 @login_required
 def follow_index(request):
     posts = Post.objects.select_related('group').filter(
-                                        author__following__user=request.user)
+        author__following__user=request.user)
     context = page_context(request, posts)
     context.update(posts=posts)
     return render(request, 'posts/follow.html', context)

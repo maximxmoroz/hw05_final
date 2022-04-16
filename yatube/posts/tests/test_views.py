@@ -21,10 +21,7 @@ User = get_user_model()
 class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super().setUpClass()
-        cls.follow_user2 = User.objects.create(username="Voldemort")
-        cls.user_not_author = get_user_model().objects.create_user(
-            username='Ivanoff')
+        super().setUpClass() 
         cls.authorized_client = Client()
         cls.new_user = User.objects.create_user(username='Testname')
         cls.new_authorized_client = Client()
@@ -193,16 +190,17 @@ class PostPagesTests(TestCase):
                 kwargs={'slug': self.other_group.slug})
         )
         self.assertNotIn(new_post, response.context['page_obj'])
-
-    def test_user_follow_to_another_user(self):
-        count_followers = self.user.following.count()
-        authorized_user = Client()
-        authorized_user.force_login(self.follow_user2)
-        authorized_user.get(reverse("posts:profile_follow",
-                                    kwargs={"username": self.user.username}))
-        self.assertEqual(self.user.following.count(), count_followers + 1)
-        self.assertTrue(
-            self.user.following.filter(user=self.follow_user2).exists())
+ 
+    def test_follow(self):
+        """Пользователь может подписаться"""
+        response = self.new_authorized_client.get(reverse(
+            'posts:profile_follow',
+            kwargs={'username': self.user.username}
+        ))
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Follow.objects.filter(
+            user=self.new_user, author=self.user
+        ).exists())
 
     def test_unfollow(self):
         """Подписчик может отписаться"""

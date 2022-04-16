@@ -189,6 +189,7 @@ class PostPagesTests(TestCase):
         )
         self.assertNotIn(new_post, response.context['page_obj'])
 
+
 class FollowTest(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -240,8 +241,8 @@ class FollowTest(TestCase):
                 author=self.author
             ).exists()
         )
+
  
-  
 class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):

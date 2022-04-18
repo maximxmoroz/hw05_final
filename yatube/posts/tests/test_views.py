@@ -385,6 +385,7 @@ class CacheTest(TestCase):
         posts_count = Post.objects.count()
         self.assertEqual(len(response.context['page_obj']), posts_count)
 
+
 class FollowTest(TestCase):
 
     @classmethod
@@ -425,4 +426,4 @@ class FollowTest(TestCase):
                 user=self.follower,
                 author=self.author
             ).exists()
-        ) 
+        )

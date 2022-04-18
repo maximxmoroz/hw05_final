@@ -384,3 +384,45 @@ class CacheTest(TestCase):
         cache.clear()
         posts_count = Post.objects.count()
         self.assertEqual(len(response.context['page_obj']), posts_count)
+
+class FollowTest(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.author = User.objects.create(username='TestFollowAuthor')
+        cls.follower = User.objects.create(username='TestFollower')
+        cls.not_follower = User.objects.create(username='TestNotFollower')
+        cls.post = Post.objects.create(
+            text='Test post for follower',
+            author=cls.author,
+        )
+
+    def setUp(self):
+        self.follower_client = Client()
+        self.follower_client.force_login(self.follower)
+        self.not_follower_client = Client()
+        self.not_follower_client.force_login(self.not_follower)
+
+    def test_create_follow(self):
+        self.follower_client.get(
+            reverse('posts:profile_follow', kwargs={'username': self.author})
+        )
+        self.assertTrue(
+            Follow.objects.filter(
+                user=self.follower,
+                author=self.author
+            ).exists()
+        )
+
+    def test_delete_follow(self):
+        Follow.objects.create(user=self.follower, author=self.author)
+        self.follower_client.get(
+            reverse('posts:profile_unfollow', kwargs={'username': self.author})
+        )
+        self.assertFalse(
+            Follow.objects.filter(
+                user=self.follower,
+                author=self.author
+            ).exists()
+        ) 

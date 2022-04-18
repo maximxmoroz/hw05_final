@@ -213,20 +213,6 @@ class PostPagesTests(TestCase):
             user=self.new_user, author=self.user
         ).exists())
 
-    def test_author_posts_for_follow_feed(self):
-        """Записи появляются в follow подписчиков; у неподписанных - нет"""
-        Follow.objects.create(
-            user=self.user, author=PostPagesTests.user
-        )
-        response = self.authorized_client.get(reverse('posts:follow_index'))
-        first_post_on_follow = response.context['page_obj'][0]
-        self.assertEqual(first_post_on_follow.author, PostPagesTests.user)
-        not_follower = User.objects.create_user(username='NoFollow')
-        not_follower_client = Client()
-        not_follower_client.force_login(not_follower)
-        response = not_follower_client.get(reverse('posts:follow_index'))
-        self.assertEqual(len(response.context['page_obj']), 0)
-
 
 class PaginatorViewsTest(TestCase):
     @classmethod
@@ -441,3 +427,14 @@ class FollowTest(TestCase):
                 author=self.author
             ).exists()
         )
+
+    def test_follow_page_context(self):
+        Follow.objects.create(
+            author=self.author,
+            user=self.follower,
+        )
+        reverse_name = reverse('posts:follow_index')
+        response_follower = self.follower_client.get(reverse_name)
+        response_not_follower = self.not_follower_client.get(reverse_name)
+        self.assertEqual(response_follower.context['page_obj'][0], self.post)
+        self.assertNotEqual(len(response_not_follower.context), 0)

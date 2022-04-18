@@ -21,7 +21,7 @@ User = get_user_model()
 class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
-        super().setUpClass() 
+        super().setUpClass()
         cls.authorized_client = Client()
         cls.new_user = User.objects.create_user(username='Testname')
         cls.new_authorized_client = Client()
@@ -190,7 +190,7 @@ class PostPagesTests(TestCase):
                 kwargs={'slug': self.other_group.slug})
         )
         self.assertNotIn(new_post, response.context['page_obj'])
- 
+
     def test_follow(self):
         """Пользователь может подписаться"""
         response = self.new_authorized_client.get(reverse(

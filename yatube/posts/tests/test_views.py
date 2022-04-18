@@ -227,6 +227,7 @@ class PostPagesTests(TestCase):
         response = not_follower_client.get(reverse('posts:follow_index'))
         self.assertEqual(len(response.context['page_obj']), 0)
 
+
 class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):

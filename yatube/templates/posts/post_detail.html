@@ -1,77 +1,77 @@
-{% extends 'base.html' %}
-{% load user_filters %}
-{% load static %}
+{% extends "base.html" %}
 {% load thumbnail %}
-{% block title %}
-{{pos_detail.text|truncatechars:30 }}
-{% endblock %}
-{% block content%}
+{% block content %}
+{% load user_filters %}
+<div class="container py-5">
   <div class="row">
     <aside class="col-12 col-md-3">
       <ul class="list-group list-group-flush">
         <li class="list-group-item">
-          Дата публикации: {{post.pub_date|date:"j E Y"}}  
-        </li>  
-        <li class="list-group-item">
-          Группа: {{ post.group.title }}
-        {% if post.group %}  
-          <a href="{% url 'posts:group_posts' post.group.slug %}">все посты группы</a>
+          Дата публикации: {{ post.created|date:"j E Y" }}
+        </li>
+        {% if post.group %}
+            
+          <li class="list-group-item">
+            Группа: {{ post.group }}
+            <a href="{% url "posts:group_posts" post.group.slug %}">
+              все записи группы
+            </a>
+          </li>
         {% endif %}
+          <li class="list-group-item">
+            Автор: {{ post.author.get_full_name }}
+          </li>
+          <li class="list-group-item d-flex justify-ontent-between align-items-center">
+          Всего постов автора:  <span>{{ post_count }}</span>
         </li>
         <li class="list-group-item">
-          Автор: {{ post.author.get_full_name }}
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          Всего постов автора:  <span > {{ post_count }}</span>
-        </li>
-        <li class="list-group-item">
-          <a href="{% url 'posts:profile' post.author.username  %}">
-              Все посты пользователя
+          <a href="{% url "posts:profile" post.author %}">
+            все посты пользователя
           </a>
         </li>
       </ul>
     </aside>
     <article class="col-12 col-md-9">
-    {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
-      <img class="card-img my-2" src="{{ im.url }}">
-    {% endthumbnail %}
-    <p>{{ post.text }}</p>
-    <a href="{% url 'posts:post_detail' post.id %}">подробная информация</a> 
+      {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+        <img src="{{ im.url }}">
+      {% endthumbnail %}
+      <p>
+      {{ post.text }}
+      </p>
       {% if post.author == request.user %}
-       <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">
-        Редактировать пост
-       </a>
+        <a href="{% url "posts:post_edit" post.id %}"
+        class="btn btn-primary"
+        >
+          Редактировать запись
+        </a>
       {% endif %}
       {% if user.is_authenticated %}
         <div class="card my-4">
           <h5 class="card-header">Добавить комментарий:</h5>
           <div class="card-body">
-            <form method="post" action="{% url 'posts:add_comment' post.id %}">
-              {% csrf_token %}      
+            <form method="post" action="{% url "posts:add_comment" post.id %}">
+            {% csrf_token %}
               <div class="form-group mb-2">
-                <textarea name="text" cols="40" rows="10" class="form-control" required id="id_text">
-                </textarea>
+                {{ form.text|addclass:"form-control" }}
               </div>
               <button type="submit" class="btn btn-primary">Отправить</button>
             </form>
           </div>
         </div>
-       {% endif %}
-
-       {% for comment in comments %}
-         <div class="media mb-4">
-           <div class="media-body">
-             <h5 class="mt-0">
-               <a href="{% url 'posts:profile' comment.author.username %}">
-                 {{ comment.author.username }}
-               </a>
-             </h5>
-               <p>
-                {{ comment.text }}
-               </p>
-             </div>
-           </div>
-        {% endfor %}
+      {% endif %}
+      {% for comment in comments %}
+        <div class="media mb-4">
+          <div class="media-body">
+            <h5 class="mt-0">
+              <a 
+              href="{% url "posts:profile" comment.author %}"
+              > {{ comment.author }} </a>
+            </h5>
+            <p> {{ comment.text }} </p>
+          </div>
+        </div>
+      {% endfor%}
     </article>
   </div>
+</div>
 {% endblock %}

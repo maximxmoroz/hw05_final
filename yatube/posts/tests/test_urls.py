@@ -13,7 +13,7 @@ class PostURLTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.user = User.objects.create_user(username='test_user') 
+        cls.user = User.objects.create_user(username='test_user')
         cls.author = User.objects.create_user(username='test_author')
         cls.authorized_author = Client()
         cls.authorized_author.force_login(cls.author)

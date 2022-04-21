@@ -17,7 +17,7 @@ TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 User = get_user_model()
 
-
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -61,13 +61,13 @@ class PostPagesTests(TestCase):
         )
 
     def setUp(self):
+        cache.clear()
         self.authorized_author = Client()
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
     def test_pages_uses_correct_template(self):
         """URL-адрес (view) использует соответствующий шаблон."""
-        cache.clear()
         templates_pages_names = {
             reverse('posts:index'): 'posts/index.html',
             reverse('about:author'): 'about/author.html',
@@ -89,7 +89,6 @@ class PostPagesTests(TestCase):
 
     def test_post_index_page_show_correct_context(self):
         """Проверяем Context страницы index"""
-        cache.clear()
         response = self.authorized_client.get(reverse('posts:index'))
         first_object = response.context['page_obj'][0]
         context_objects = {
@@ -335,6 +334,27 @@ class CommentTest(TestCase):
             text='Тестовый текст комментария'
         )
 
+    def setUp(self):
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.author)
+
+    def test_authorized_client_can_comment(self):
+        comments_count = Comment.objects.count()
+        reverse_name = reverse(
+            'posts:add_comment', kwargs={'post_id': self.post.id}
+        )
+        form_data = {
+            'text': 'TestComment'
+        }
+        response = self.authorized_client.post(
+            reverse_name,
+            form_data,
+        )
+        self.assertRedirects(
+            response,
+            reverse('posts:post_detail', kwargs={'post_id': self.post.id}))
+        self.assertEqual(Comment.objects.count(), comments_count + 1)
+
     def test_comment(self):
         self.assertTrue(
             Comment.objects.filter(
@@ -377,13 +397,15 @@ class CacheTest(TestCase):
 
     def test_caching(self):
         cache.clear()
-        response = self.author_client.get(reverse('posts:index'))
-        posts_count = Post.objects.count()
-        self.post.delete
-        self.assertEqual(len(response.context['page_obj']), posts_count)
+        response = self.client.get(reverse('posts:index'))
+        content = response.content
+        self.assertIn(self.post, response.context['page_obj'])
+        self.post.delete()
+        response = self.client.get(reverse('posts:index'))
+        self.assertEqual(content, response.content)
         cache.clear()
-        posts_count = Post.objects.count()
-        self.assertEqual(len(response.context['page_obj']), posts_count)
+        response = self.client.get(reverse('posts:index'))
+        self.assertNotEqual(content, response.content)
 
 
 class FollowTest(TestCase):

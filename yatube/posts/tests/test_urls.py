@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from posts.models import Post, Group
 from http import HTTPStatus
 from django.core.cache import cache
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -11,15 +12,15 @@ class PostURLTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.guest_client = Client()
 
         cls.user = User.objects.create_user(username='test_user')
-        cls.authorized_client = Client()
-        cls.authorized_client.force_login(cls.user)
-
+        
         cls.author = User.objects.create_user(username='test_author')
         cls.authorized_author = Client()
         cls.authorized_author.force_login(cls.author)
+        cls.another_user = User.objects.create_user(username='another_user')
+        cls.another_client = Client()
+        cls.another_client.force_login(cls.another_user)
 
         cls.group = Group.objects.create(
             title='test_group_title',
@@ -41,6 +42,11 @@ class PostURLTests(TestCase):
             '/create/': 'posts/create_post.html',
             f'/posts/{cls.post.id}/edit/': 'posts/create_post.html',
         }
+
+    def setUp(self):
+        self.guest_client = Client()
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.user)
 
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
@@ -76,3 +82,27 @@ class PostURLTests(TestCase):
     def test_unexisting_page_404(self):
         response = self.client.get('/unexisting_page/')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_create_post_redirect_guest(self):
+        '''Проверка создания поста для неавторизованного юзера'''
+        response = self.guest_client.get(
+            reverse('posts:post_create'),
+            follow=True
+        )
+        self.assertRedirects(
+            response,
+            reverse('users:login') + '?next=/create/'
+        )
+
+    # Проверяем редирект для не-автора
+    def test_post_edit_redirect_not_author(self):
+        '''Проверка, что для не автора при попытке
+         редактировании поста будет редирект на пост'''
+        post_id = PostURLTests.post.pk
+        response = self.another_client.get(
+            reverse('posts:post_edit', args=[post_id]),
+            follow=True
+        )
+        self.assertRedirects(
+            response, (reverse('posts:post_detail', args=[post_id]))
+        )

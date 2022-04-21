@@ -13,8 +13,7 @@ class PostURLTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.user = User.objects.create_user(username='test_user')
-        
+        cls.user = User.objects.create_user(username='test_user') 
         cls.author = User.objects.create_user(username='test_author')
         cls.authorized_author = Client()
         cls.authorized_author.force_login(cls.author)
@@ -24,7 +23,7 @@ class PostURLTests(TestCase):
 
         cls.group = Group.objects.create(
             title='test_group_title',
-           slug='test_group_slug',
+            slug='test_group_slug',
             description='test_group_descrioption'
         )
 
@@ -77,7 +76,7 @@ class PostURLTests(TestCase):
     def test_authorized_client(self):
         """Проверка авторизованного пользователя"""
         response = self.authorized_client.get('/create/')
-        self.assertTemplateUsed(response, 'posts/create_post.html') 
+        self.assertTemplateUsed(response, 'posts/create_post.html')
 
     def test_unexisting_page_404(self):
         response = self.client.get('/unexisting_page/')

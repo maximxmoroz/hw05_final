@@ -11,6 +11,7 @@ from django.urls import reverse
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
+
 class PostFormsTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -22,7 +23,7 @@ class PostFormsTests(TestCase):
         cls.authorized_author.force_login(cls.author)
 
         cls.group = Group.objects.create(
-           title='test_group_title',
+            title='test_group_title',
             slug='test_group_slug',
             description='test_group_description',
         )
@@ -55,7 +56,7 @@ class PostFormsTests(TestCase):
             reverse('posts:profile', kwargs={'username': self.user.username})
         )
         self.assertEqual(Post.objects.count(), post_count + 1)
-        self.assertEqual(posts_by_id[0].text, text) 
+        self.assertEqual(posts_by_id[0].text, text)
 
     def test_edit_post(self):
         form_data = {
@@ -75,7 +76,7 @@ class PostFormsTests(TestCase):
         edit_post = Post.objects.latest('id')
         self.assertEqual(edit_post.text, 'editted_text')
         self.assertEqual(edit_post.author, self.author)
-        self.assertEqual(edit_post.group, self.group) 
+        self.assertEqual(edit_post.group, self.group)
 
     def test_anonymous_edit_post(self):
         text = self.post.text

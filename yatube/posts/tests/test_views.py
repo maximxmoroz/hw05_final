@@ -357,19 +357,17 @@ class CommentTest(TestCase):
         self.assertEqual(Comment.objects.count(), comments_count + 1)
 
     def test_comment(self):
-        self.assertTrue(
-            Comment.objects.filter(
-                post=self.post,
-                author=self.commentator,
-                text='Тестовый текст комментария'
-            ).exists
-        )
-        response = Comment.objects.filter(
+        comments_count = Comment.objects.count()
+        new_comment = Comment.objects.create(
             post=self.post,
-            author=self.commentator,
-            text='Тестовый текст комментария'
-        ).count()
-        self.assertEqual(response, 1)
+            author=self.author,
+            text='test2'
+        )
+        response = self.authorized_client.get(
+            reverse('posts:post_detail', kwargs={'post_id': self.post.id})
+        )
+        self.assertEqual(comments_count, Comment.objects.count() - 1)
+        self.assertIn(new_comment, response.context.get('comments'))
 
     def test_comment_context(self):
         response = self.commentator_client.get(
